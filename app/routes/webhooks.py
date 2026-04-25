@@ -96,7 +96,7 @@ def telegram_webhook():
             try:
                 requests.post(
                     f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-                    json={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"},
+                    json={"chat_id": chat_id, "text": msg, "parse_mode": "HTML"},
                     timeout=5
                 )
             except Exception as e:
@@ -105,11 +105,11 @@ def telegram_webhook():
     if text.startswith("/oncall"):
         alert_text = text[len("/oncall"):].strip()
         if not alert_text:
-            reply("Usage: `/oncall <alert description>`")
+            reply("Usage: <code>/oncall &lt;alert description&gt;</code>")
             return jsonify({"ok": True})
 
         # Parse optional severity prefix: /oncall [HIGH] disk full on prod-db-01
-        severity = "medium"
+        severity = "high"  # default to high — Telegram alerts are usually urgent
         for sev in ("critical", "high", "medium", "low"):
             if alert_text.lower().startswith(f"[{sev}]"):
                 severity = sev
@@ -126,8 +126,8 @@ def telegram_webhook():
         _process_incident(incident_id, alert_text, "", severity)
 
         base_url = os.getenv("BASE_URL", "")
-        url_line = f"\n🔗 {base_url}/incidents/{incident_id}" if base_url else ""
-        reply(f"✅ *Incident #{incident_id} opened*\n{alert_text}{url_line}")
+        url_line = f'\n🔗 <a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
+        reply(f"✅ <b>Incident #{incident_id} opened</b>\n{alert_text}{url_line}")
 
     elif text.startswith("/status"):
         from ..models.database import list_incidents
@@ -135,12 +135,12 @@ def telegram_webhook():
         if not open_incidents:
             reply("✅ No open incidents.")
         else:
-            lines = [f"*Open Incidents ({len(open_incidents)})*"]
+            lines = [f"<b>Open Incidents ({len(open_incidents)})</b>"]
             for i in open_incidents:
-                lines.append(f"• #{i['id']} [{i['severity'].upper()}] {i['title']} — `{i['status']}`")
+                lines.append(f"• #{i['id']} [{i['severity'].upper()}] {i['title']} — <code>{i['status']}</code>")
             reply("\n".join(lines))
 
     else:
-        reply("Available commands:\n`/oncall <description>` — open incident\n`/status` — list open incidents")
+        reply("Available commands:\n<code>/oncall &lt;description&gt;</code> — open incident\n<code>/status</code> — list open incidents")
 
     return jsonify({"ok": True})

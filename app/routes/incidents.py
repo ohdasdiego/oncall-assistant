@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, jsonif
 
 from ..models.database import (
     create_incident, get_incident, list_incidents,
-    update_incident_status, add_timeline_event, get_timeline, get_context
+    update_incident_status, add_timeline_event, get_timeline, get_context, save_context
 )
 from ..services.aggregator import aggregate_context
 from ..services.claude_service import generate_response_plan, generate_handoff_notes
@@ -121,6 +121,13 @@ def _process_incident(incident_id, title, description, severity):
     """Aggregate context and generate AI plan. Called synchronously for simplicity."""
     try:
         context = aggregate_context(title, description)
+
+        # Persist each source result so the UI can display context source status
+        for key in ("rag_runbook", "incident_logger", "infra_monitor"):
+            src = context.get(key, {})
+            if src.get("available"):
+                save_context(incident_id, key, json.dumps(src))
+
         add_timeline_event(
             incident_id, "CONTEXT_AGGREGATED",
             f"Sources available: {context['sources_available']}/3 — "
