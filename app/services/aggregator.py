@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # --- Source endpoints (configure via env) ---
 RAG_RUNBOOK_URL = os.getenv("RAG_RUNBOOK_URL", "https://runbooks.ado-runner.com/query")
 INCIDENT_LOGGER_URL = os.getenv("INCIDENT_LOGGER_URL", "http://localhost:5001/api/incidents")
-INFRA_MONITOR_URL = os.getenv("INFRA_MONITOR_URL", "http://localhost:5002/api/health")
+INFRA_MONITOR_URL = os.getenv("INFRA_MONITOR_URL", "http://localhost:5000/api/metrics")
 
 REQUEST_TIMEOUT = int(os.getenv("CONTEXT_TIMEOUT_SECONDS", "8"))
 
@@ -55,11 +55,13 @@ def fetch_past_incidents(query: str, limit: int = 5) -> dict:
             timeout=REQUEST_TIMEOUT
         )
         resp.raise_for_status()
-        incidents = resp.json()
+        data = resp.json()
+        # Logger returns {"incidents": [...], "total": N} or a plain list
+        incidents = data.get("incidents", data) if isinstance(data, dict) else data
         if not incidents:
             return {"source": "incident_logger", "available": True, "content": "No similar past incidents found."}
         summary = "\n".join(
-            f"- [{i.get('severity','?').upper()}] {i.get('title','?')} — {i.get('resolution','No resolution logged.')}"
+            f"- [{i.get('severity','?').upper()}] {i.get('title','?')} — {i.get('resolution') or i.get('status','No resolution logged.')}"
             for i in incidents[:limit]
         )
         return {
@@ -83,12 +85,23 @@ def fetch_infra_health() -> dict:
         resp = requests.get(INFRA_MONITOR_URL, timeout=REQUEST_TIMEOUT)
         resp.raise_for_status()
         data = resp.json()
-        # Normalize — Infra Monitor may return list or dict
-        if isinstance(data, list):
-            lines = [f"- {item.get('host','?')}: {item.get('status','?')}" for item in data[:10]]
-            content = "\n".join(lines)
-        else:
-            content = json.dumps(data, indent=2)
+        # Extract key health signals from Infra Monitor /api/metrics response
+        ai = data.get("ai_analysis", {})
+        metrics = data.get("metrics", {})
+        lines = []
+        if ai.get("headline"):
+            lines.append(f"Status: {ai.get('status','?').upper()} — {ai['headline']}")
+        if metrics:
+            cpu = metrics.get("cpu_percent")
+            mem = metrics.get("memory_percent")
+            disk = metrics.get("disk_percent")
+            if cpu is not None: lines.append(f"CPU: {cpu}%")
+            if mem is not None: lines.append(f"Memory: {mem}%")
+            if disk is not None: lines.append(f"Disk: {disk}%")
+        anomalies = ai.get("anomalies", [])
+        if anomalies:
+            lines.append(f"Anomalies: {', '.join(anomalies)}")
+        content = "\n".join(lines) if lines else json.dumps(data, indent=2)
         return {
             "source": "infra_monitor",
             "available": True,
