@@ -33,36 +33,43 @@
   align-items: start;
 }
 
+@media (max-width: 768px) {
+  .detail-grid { grid-template-columns: 1fr; }
+  .incident-header { grid-template-columns: 1fr; }
+  .incident-header > div:last-child { display: flex; flex-wrap: wrap; gap: 8px; }
+  .incident-header .btn { flex: 1; justify-content: center; min-width: 120px; }
+}
+
 /* Timeline */
 .timeline { display: flex; flex-direction: column; gap: 0; }
 
 .timeline-item {
   display: grid;
-  grid-template-columns: 24px 1fr;
+  grid-template-columns: 32px 1fr;
   gap: 12px;
   position: relative;
+  min-width: 0;
 }
 
 .timeline-item:not(:last-child) .timeline-line {
   position: absolute;
-  left: 11px;
-  top: 24px;
+  left: 15px;
+  top: 32px;
   bottom: -1px;
   width: 1px;
   background: var(--border);
 }
 
 .timeline-dot {
-  width: 24px; height: 24px;
+  width: 32px; height: 32px;
   border-radius: 50%;
   border: 2px solid var(--border);
   background: var(--surface);
   flex-shrink: 0;
-  margin-top: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 10px;
   position: relative;
   z-index: 1;
 }
@@ -75,7 +82,7 @@
 .timeline-dot.HANDOFF         { border-color: var(--muted);  color: var(--muted); }
 .timeline-dot.ERROR           { border-color: var(--red);    color: var(--red); }
 
-.timeline-body { padding-bottom: 20px; }
+.timeline-body { padding-bottom: 20px; min-width: 0; overflow: hidden; }
 
 .timeline-type {
   font-family: var(--mono);
@@ -99,15 +106,67 @@
   color: var(--text);
   white-space: pre-wrap;
   word-break: break-word;
+  overflow-wrap: break-word;
   line-height: 1.6;
+  max-width: 100%;
 }
 
 .timeline-content.ai-plan {
   background: var(--accent-dim);
   border: 1px solid rgba(255,107,0,0.2);
   border-radius: 4px;
-  padding: 14px;
+  padding: 14px 16px;
   font-size: 13px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.timeline-content.ai-plan h2 {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 1rem 0 0.4rem;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255,107,0,0.15);
+}
+
+.timeline-content.ai-plan h2:first-child { margin-top: 0; }
+
+.timeline-content.ai-plan p {
+  margin-bottom: 0.5rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.timeline-content.ai-plan ul,
+.timeline-content.ai-plan ol {
+  padding-left: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content.ai-plan li {
+  margin-bottom: 0.3rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.timeline-content.ai-plan code {
+  font-family: var(--mono);
+  font-size: 0.8em;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: var(--accent2);
+}
+
+.timeline-content.ai-plan strong {
+  color: #fff;
+  font-weight: 600;
 }
 
 /* Context cards */

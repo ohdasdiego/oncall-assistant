@@ -47,6 +47,12 @@
   margin-top: 8px;
 }
 
+@media (max-width: 768px) {
+  .new-incident-grid { grid-template-columns: 1fr !important; }
+  .form-actions { flex-direction: column; }
+  .form-actions .btn { width: 100%; justify-content: center; }
+}
+
 .error-msg {
   background: rgba(239,68,68,0.1);
   border: 1px solid rgba(239,68,68,0.3);
@@ -83,7 +89,7 @@
 <div class="error-msg">{{ error }}</div>
 {% endif %}
 
-<div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;">
+<div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;" class="new-incident-grid">
   <div class="card">
     <form method="POST">
       <div class="form-grid">

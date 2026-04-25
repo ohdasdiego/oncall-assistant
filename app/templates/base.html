@@ -250,6 +250,16 @@
     }
 
     {% block extra_styles %}{% endblock %}
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      .container { padding: 1rem; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .page-header > div:last-child { align-self: stretch; }
+      .page-header .btn { width: 100%; justify-content: center; }
+      .nav-links a { font-size: 0.72rem; }
+      .logo h1 { font-size: 0.85rem; }
+    }
   </style>
 </head>
 <body>

@@ -9,6 +9,15 @@
   margin-bottom: 24px;
 }
 
+@media (max-width: 640px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .incident-table { font-size: 12px; }
+  .incident-table th, .incident-table td { padding: 10px 8px; }
+  /* Hide less important columns on mobile */
+  .incident-table .col-source,
+  .incident-table .col-time { display: none; }
+}
+
 .stat-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -174,8 +183,8 @@
         <th>Title</th>
         <th>Severity</th>
         <th>Status</th>
-        <th>Source</th>
-        <th>Opened</th>
+        <th class="col-source">Source</th>
+        <th class="col-time">Opened</th>
       </tr>
     </thead>
     <tbody>
@@ -185,8 +194,8 @@
         <td class="incident-title"><a href="/incidents/{{ inc.id }}">{{ inc.title }}</a></td>
         <td><span class="badge badge-{{ inc.severity }}">{{ inc.severity }}</span></td>
         <td><span class="status-dot {{ inc.status }}">{{ inc.status }}</span></td>
-        <td class="incident-source">{{ inc.source }}</td>
-        <td class="incident-time">{{ inc.created_at[:16].replace('T', ' ') }}</td>
+        <td class="incident-source col-source">{{ inc.source }}</td>
+        <td class="incident-time col-time">{{ inc.created_at[:16].replace('T', ' ') }}</td>
       </tr>
       {% endfor %}
     </tbody>
