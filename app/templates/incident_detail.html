@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block title %}#{{ incident.id }} — {{ incident.title }}{% endblock %}
+
+{% block extra_styles %}
+.incident-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+.incident-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.incident-desc {
+  color: var(--dim);
+  font-size: 14px;
+  margin-top: 8px;
+  line-height: 1.7;
+}
+
+/* Layout */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 12px;
+  position: relative;
+}
+
+.timeline-item:not(:last-child) .timeline-line {
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  bottom: -1px;
+  width: 1px;
+  background: var(--border);
+}
+
+.timeline-dot {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-dot.OPENED          { border-color: var(--accent); color: var(--accent); }
+.timeline-dot.STATUS_CHANGE   { border-color: var(--yellow); color: var(--yellow); }
+.timeline-dot.AI_PLAN         { border-color: var(--accent2); color: var(--accent2); }
+.timeline-dot.CONTEXT_AGGREGATED { border-color: var(--green); color: var(--green); }
+.timeline-dot.WEBHOOK         { border-color: var(--orange); color: var(--orange); }
+.timeline-dot.HANDOFF         { border-color: var(--dim); color: var(--dim); }
+.timeline-dot.ERROR           { border-color: var(--red); color: var(--red); }
+
+.timeline-body { padding-bottom: 20px; }
+
+.timeline-type {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.timeline-time {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+
+.timeline-content {
+  font-size: 13px;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+}
+
+.timeline-content.ai-plan {
+  background: rgba(6,182,212,0.04);
+  border: 1px solid rgba(6,182,212,0.15);
+  border-radius: 4px;
+  padding: 14px;
+  font-size: 13px;
+}
+
+/* Context cards */
+.context-source {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.context-source:last-child { border-bottom: none; }
+
+.source-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.source-dot.ok   { background: var(--green); }
+.source-dot.fail { background: var(--red); }
+
+.source-name {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  flex: 1;
+}
+
+.source-status {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+
+/* Status controls */
+.status-controls { display: flex; flex-direction: column; gap: 8px; }
+
+.status-btn {
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-btn:hover { border-color: var(--muted); color: var(--text); }
+.status-btn.active { border-color: var(--accent); color: var(--accent); }
+{% endblock %}
+
+{% block content %}
+<div class="incident-header">
+  <div>
+    <div class="incident-meta">
+      <span style="font-family: var(--mono); font-size: 13px; color: var(--dim);">#{{ incident.id }}</span>
+      <span class="badge badge-{{ incident.severity }}">{{ incident.severity }}</span>
+      <span class="badge" style="background: rgba(255,255,255,0.05); color: var(--dim); border: 1px solid var(--border);">
+        {{ incident.source }}
+      </span>
+    </div>
+    <div class="page-title">{{ incident.title }}</div>
+    {% if incident.description %}
+    <div class="incident-desc">{{ incident.description }}</div>
+    {% endif %}
+    <div style="font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 10px;">
+      Opened {{ incident.created_at[:16].replace('T', ' ') }} UTC
+      {% if incident.resolved_at %}
+       · Resolved {{ incident.resolved_at[:16].replace('T', ' ') }} UTC
+      {% endif %}
+    </div>
+  </div>
+  <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+    <a href="/incidents/{{ incident.id }}/handoff" class="btn btn-ghost">Handoff Notes</a>
+    <a href="/" class="btn btn-ghost">← Dashboard</a>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <!-- Timeline -->
+  <div>
+    <div class="card-title" style="margin-bottom: 16px;">Timeline</div>
+    {% if timeline %}
+    <div class="timeline">
+      {% for event in timeline %}
+      <div class="timeline-item">
+        <div class="timeline-line"></div>
+        <div class="timeline-dot {{ event.event_type }}">
+          {% if event.event_type == 'AI_PLAN' %}✦
+          {% elif event.event_type == 'OPENED' %}○
+          {% elif event.event_type == 'STATUS_CHANGE' %}△
+          {% elif event.event_type == 'CONTEXT_AGGREGATED' %}◎
+          {% elif event.event_type == 'WEBHOOK' %}⬡
+          {% elif event.event_type == 'ERROR' %}✕
+          {% else %}·
+          {% endif %}
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-type">{{ event.event_type.replace('_', ' ') }}</div>
+          <div class="timeline-time">{{ event.created_at[:16].replace('T', ' ') }} UTC</div>
+          <div class="timeline-content {% if event.event_type == 'AI_PLAN' %}ai-plan{% endif %}">{{ event.content }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="color: var(--dim); font-size: 13px;">No timeline events yet.</div>
+    {% endif %}
+  </div>
+
+  <!-- Sidebar -->
+  <div style="display: flex; flex-direction: column; gap: 16px;">
+
+    <!-- Status control -->
+    <div class="card">
+      <div class="card-title">Update Status</div>
+      <div class="status-controls">
+        {% for status in ['OPEN', 'INVESTIGATING', 'MITIGATED', 'RESOLVED'] %}
+        <form method="POST" action="/incidents/{{ incident.id }}/status">
+          <input type="hidden" name="status" value="{{ status }}">
+          <button type="submit" class="status-btn {% if incident.status == status %}active{% endif %}">
+            {% if status == 'OPEN' %}🔴
+            {% elif status == 'INVESTIGATING' %}🟡
+            {% elif status == 'MITIGATED' %}🟠
+            {% else %}🟢
+            {% endif %}
+            {{ status }}
+          </button>
+        </form>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Context sources -->
+    <div class="card">
+      <div class="card-title">Context Sources</div>
+      {% set sources = [
+        ('RAG Runbook', 'rag_runbook'),
+        ('Incident Logger', 'incident_logger'),
+        ('Infra Monitor', 'infra_monitor')
+      ] %}
+      {% for label, key in sources %}
+        {% set available = namespace(val=False) %}
+        {% for entry in context_entries %}
+          {% if entry.source == key %}{% set available.val = True %}{% endif %}
+        {% endfor %}
+        <div class="context-source">
+          <div class="source-dot {% if available.val %}ok{% else %}fail{% endif %}"></div>
+          <span class="source-name">{{ label }}</span>
+          <span class="source-status">{% if available.val %}fetched{% else %}unavailable{% endif %}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Incident metadata -->
+    <div class="card">
+      <div class="card-title">Details</div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        {% for label, value in [
+          ('ID', '#' ~ incident.id),
+          ('Severity', incident.severity.upper()),
+          ('Source', incident.source),
+          ('Status', incident.status),
+          ('Opened', incident.created_at[:16].replace('T', ' '))
+        ] %}
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-family: var(--mono); font-size: 11px; color: var(--dim);">{{ label }}</span>
+          <span style="font-family: var(--mono); font-size: 12px; color: var(--text);">{{ value }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}New Incident{% endblock %}
+
+{% block extra_styles %}
+.form-grid { display: grid; gap: 20px; max-width: 680px; }
+
+.form-group label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--accent);
+}
+
+.form-group textarea { resize: vertical; min-height: 100px; }
+
+.form-group select option { background: var(--surface); }
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.error-msg {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 4px;
+  padding: 10px 14px;
+  color: var(--red);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.info-box {
+  background: rgba(6,182,212,0.06);
+  border: 1px solid rgba(6,182,212,0.2);
+  border-radius: 4px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.7;
+}
+
+.info-box strong { color: var(--accent2); font-family: var(--mono); }
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Open New Incident</div>
+    <div class="page-subtitle">Context will be automatically aggregated from all ADOStack sources</div>
+  </div>
+  <a href="/" class="btn btn-ghost">← Back</a>
+</div>
+
+{% if error %}
+<div class="error-msg">{{ error }}</div>
+{% endif %}
+
+<div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;">
+  <div class="card">
+    <form method="POST">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Incident Title *</label>
+          <input type="text" name="title" placeholder="e.g. High CPU on prod-web-01" autofocus required>
+        </div>
+
+        <div class="form-group">
+          <label>Severity</label>
+          <select name="severity">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" placeholder="What is happening? Any observed symptoms, affected systems, or error messages..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">⚡ Open Incident</button>
+          <a href="/" class="btn btn-ghost">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-title">What happens next</div>
+    <div class="info-box">
+      After you submit, the assistant will automatically:<br><br>
+      <strong>1.</strong> Query <strong>RAG Runbook</strong> for relevant runbook steps<br>
+      <strong>2.</strong> Search <strong>Incident Logger</strong> for similar past incidents<br>
+      <strong>3.</strong> Fetch <strong>Infra Monitor</strong> for current system health<br>
+      <strong>4.</strong> Generate an AI response plan<br>
+      <strong>5.</strong> Post a Telegram alert
+    </div>
+  </div>
+</div>
+{% endblock %}

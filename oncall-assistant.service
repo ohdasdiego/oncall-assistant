@@ -1,0 +1,20 @@
+[Unit]
+Description=On-Call Assistant — ADOStack
+After=network.target
+
+[Service]
+User=claw
+WorkingDirectory=/home/claw/Projects/oncall-assistant
+EnvironmentFile=/home/claw/Projects/oncall-assistant/.env
+ExecStart=/home/claw/Projects/oncall-assistant/venv/bin/gunicorn \
+    --workers 2 \
+    --bind 127.0.0.1:5005 \
+    --timeout 60 \
+    --access-logfile /home/claw/Projects/oncall-assistant/logs/access.log \
+    --error-logfile /home/claw/Projects/oncall-assistant/logs/error.log \
+    wsgi:application
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

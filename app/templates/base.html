@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}On-Call Assistant{% endblock %} — ADOStack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0a0c0f;
+      --surface:  #111318;
+      --border:   #1e2330;
+      --muted:    #2a2f3d;
+      --text:     #c8cdd8;
+      --dim:      #5a6070;
+      --accent:   #3b82f6;
+      --accent2:  #06b6d4;
+      --green:    #22c55e;
+      --yellow:   #eab308;
+      --orange:   #f97316;
+      --red:      #ef4444;
+      --critical: #dc2626;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Subtle scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Nav ── */
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      height: 52px;
+    }
+
+    .nav-brand {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent2);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-brand::before {
+      content: '◈';
+      color: var(--accent);
+    }
+
+    .nav-links { display: flex; gap: 24px; }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--dim);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-status {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pulse {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── Page header ── */
+    .page-header {
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .page-title {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--dim);
+      margin-top: 4px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { background: #2563eb; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--dim);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--red);
+      border-color: var(--red);
+    }
+    .btn-danger:hover { background: var(--red); color: #fff; }
+
+    /* ── Severity badges ── */
+    .badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge-critical { background: rgba(220,38,38,0.15); color: var(--critical); border: 1px solid rgba(220,38,38,0.3); }
+    .badge-high     { background: rgba(239,68,68,0.12); color: var(--red);      border: 1px solid rgba(239,68,68,0.25); }
+    .badge-medium   { background: rgba(249,115,22,0.12); color: var(--orange);  border: 1px solid rgba(249,115,22,0.25); }
+    .badge-low      { background: rgba(234,179,8,0.12); color: var(--yellow);   border: 1px solid rgba(234,179,8,0.25); }
+
+    /* ── Status badges ── */
+    .status-open        { color: var(--red);    }
+    .status-investigating { color: var(--yellow); }
+    .status-mitigated   { color: var(--orange); }
+    .status-resolved    { color: var(--green);  }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .card-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* ── Flash messages ── */
+    .flash {
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 4px;
+      padding: 10px 16px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--accent2);
+    }
+
+    {% block extra_styles %}{% endblock %}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand">ADOStack / on-call</a>
+    <div class="nav-links">
+      <a href="/">Incidents</a>
+      <a href="/incidents/new">+ New</a>
+    </div>
+    <div class="nav-status">
+      <div class="pulse"></div>
+      ONLINE
+    </div>
+  </nav>
+
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="flash">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

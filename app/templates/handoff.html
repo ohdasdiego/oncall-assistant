@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Handoff — #{{ incident.id }}{% endblock %}
+
+{% block extra_styles %}
+.handoff-box {
+  background: rgba(59,130,246,0.04);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 6px;
+  padding: 24px;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.handoff-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Shift Handoff Notes</div>
+    <div class="page-subtitle">#{{ incident.id }} — {{ incident.title }}</div>
+  </div>
+  <a href="/incidents/{{ incident.id }}" class="btn btn-ghost">← Incident</a>
+</div>
+
+<div class="card" style="max-width: 720px;">
+  <div class="card-title">AI-Generated Handoff</div>
+  <div class="handoff-box">{{ notes }}</div>
+  <div class="handoff-actions">
+    <a href="/incidents/{{ incident.id }}" class="btn btn-ghost">← Back to Incident</a>
+    <a href="/" class="btn btn-ghost">Dashboard</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}Incidents{% endblock %}
+
+{% block extra_styles %}
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+  margin-top: 4px;
+  line-height: 1;
+}
+
+.stat-card.open .stat-value { color: var(--red); }
+.stat-card.investigating .stat-value { color: var(--yellow); }
+.stat-card.resolved .stat-value { color: var(--green); }
+
+/* Incident table */
+.incident-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.incident-table th {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.incident-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.incident-table tr:last-child td { border-bottom: none; }
+
+.incident-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.incident-id {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.incident-title a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.incident-title a:hover { color: #fff; }
+
+.incident-source {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.incident-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-dot::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.OPEN::before          { background: var(--red);    box-shadow: 0 0 6px var(--red); }
+.status-dot.INVESTIGATING::before { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.status-dot.MITIGATED::before     { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+.status-dot.RESOLVED::before      { background: var(--green);  }
+
+.status-dot.OPEN          { color: var(--red); }
+.status-dot.INVESTIGATING { color: var(--yellow); }
+.status-dot.MITIGATED     { color: var(--orange); }
+.status-dot.RESOLVED      { color: var(--green); }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.empty-state span { display: block; font-size: 32px; margin-bottom: 12px; }
+{% endblock %}
+
+{% block content %}
+{% set open_count = incidents | selectattr("status", "ne", "RESOLVED") | list | length %}
+{% set resolved_count = incidents | selectattr("status", "equalto", "RESOLVED") | list | length %}
+{% set investigating_count = incidents | selectattr("status", "equalto", "INVESTIGATING") | list | length %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Incident Dashboard</div>
+    <div class="page-subtitle">{{ incidents | length }} total incidents tracked</div>
+  </div>
+  <a href="/incidents/new" class="btn btn-primary">+ Open Incident</a>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card open">
+    <div class="stat-label">Open</div>
+    <div class="stat-value">{{ open_count }}</div>
+  </div>
+  <div class="stat-card investigating">
+    <div class="stat-label">Investigating</div>
+    <div class="stat-value">{{ investigating_count }}</div>
+  </div>
+  <div class="stat-card resolved">
+    <div class="stat-label">Resolved (all time)</div>
+    <div class="stat-value">{{ resolved_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total</div>
+    <div class="stat-value">{{ incidents | length }}</div>
+  </div>
+</div>
+
+<div class="card" style="padding: 0;">
+  {% if incidents %}
+  <table class="incident-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Source</th>
+        <th>Opened</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inc in incidents %}
+      <tr>
+        <td class="incident-id">#{{ inc.id }}</td>
+        <td class="incident-title"><a href="/incidents/{{ inc.id }}">{{ inc.title }}</a></td>
+        <td><span class="badge badge-{{ inc.severity }}">{{ inc.severity }}</span></td>
+        <td><span class="status-dot {{ inc.status }}">{{ inc.status }}</span></td>
+        <td class="incident-source">{{ inc.source }}</td>
+        <td class="incident-time">{{ inc.created_at[:16].replace('T', ' ') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <span>✓</span>
+    No incidents. All systems nominal.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
