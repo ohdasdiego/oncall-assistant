@@ -19,7 +19,7 @@
 }
 
 .incident-desc {
-  color: var(--dim);
+  color: var(--muted);
   font-size: 14px;
   margin-top: 8px;
   line-height: 1.7;
@@ -67,30 +67,30 @@
   z-index: 1;
 }
 
-.timeline-dot.OPENED          { border-color: var(--accent); color: var(--accent); }
-.timeline-dot.STATUS_CHANGE   { border-color: var(--yellow); color: var(--yellow); }
+.timeline-dot.OPENED          { border-color: var(--accent);  color: var(--accent); }
+.timeline-dot.STATUS_CHANGE   { border-color: var(--yellow);  color: var(--yellow); }
 .timeline-dot.AI_PLAN         { border-color: var(--accent2); color: var(--accent2); }
 .timeline-dot.CONTEXT_AGGREGATED { border-color: var(--green); color: var(--green); }
-.timeline-dot.WEBHOOK         { border-color: var(--orange); color: var(--orange); }
-.timeline-dot.HANDOFF         { border-color: var(--dim); color: var(--dim); }
-.timeline-dot.ERROR           { border-color: var(--red); color: var(--red); }
+.timeline-dot.WEBHOOK         { border-color: var(--accent);  color: var(--accent); }
+.timeline-dot.HANDOFF         { border-color: var(--muted);  color: var(--muted); }
+.timeline-dot.ERROR           { border-color: var(--red);    color: var(--red); }
 
 .timeline-body { padding-bottom: 20px; }
 
 .timeline-type {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: var(--dim);
+  color: var(--muted);
   text-transform: uppercase;
   margin-bottom: 4px;
 }
 
 .timeline-time {
   font-family: var(--mono);
-  font-size: 10px;
-  color: var(--dim);
+  font-size: 0.65rem;
+  color: var(--muted);
   margin-bottom: 8px;
 }
 
@@ -103,8 +103,8 @@
 }
 
 .timeline-content.ai-plan {
-  background: rgba(6,182,212,0.04);
-  border: 1px solid rgba(6,182,212,0.15);
+  background: var(--accent-dim);
+  border: 1px solid rgba(255,107,0,0.2);
   border-radius: 4px;
   padding: 14px;
   font-size: 13px;
@@ -139,7 +139,7 @@
 .source-status {
   font-family: var(--mono);
   font-size: 11px;
-  color: var(--dim);
+  color: var(--muted);
 }
 
 /* Status controls */
@@ -162,8 +162,8 @@
   gap: 8px;
 }
 
-.status-btn:hover { border-color: var(--muted); color: var(--text); }
-.status-btn.active { border-color: var(--accent); color: var(--accent); }
+.status-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.status-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 {% endblock %}
 
 {% block content %}

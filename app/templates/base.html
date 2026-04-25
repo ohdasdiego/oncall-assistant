@@ -5,24 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}On-Call Assistant{% endblock %} — ADOStack</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:       #0a0c0f;
-      --surface:  #111318;
-      --border:   #1e2330;
-      --muted:    #2a2f3d;
-      --text:     #c8cdd8;
-      --dim:      #5a6070;
-      --accent:   #3b82f6;
-      --accent2:  #06b6d4;
-      --green:    #22c55e;
-      --yellow:   #eab308;
-      --orange:   #f97316;
-      --red:      #ef4444;
-      --critical: #dc2626;
-      --mono: 'IBM Plex Mono', monospace;
-      --sans: 'IBM Plex Sans', sans-serif;
+      --bg:           #111111;
+      --surface:      #181818;
+      --card:         #1f1f1f;
+      --border:       #2a2a2a;
+      --border2:      #333333;
+      --accent:       #ff6b00;
+      --accent2:      #ff8c00;
+      --accent-dim:   rgba(255,107,0,0.12);
+      --accent-glow:  rgba(255,107,0,0.25);
+      --red:          #f2495c;
+      --red-dim:      rgba(242,73,92,0.12);
+      --yellow:       #f5a623;
+      --yellow-dim:   rgba(245,166,35,0.12);
+      --green:        #73bf69;
+      --green-dim:    rgba(115,191,105,0.12);
+      --purple:       #a78bfa;
+      --text:         #d9d9d9;
+      --muted:        #686868;
+      --mono:         'JetBrains Mono', 'Fira Code', monospace;
+      --sans:         'Inter', 'Segoe UI', system-ui, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,119 +41,128 @@
       min-height: 100vh;
     }
 
-    /* Subtle scanline overlay */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.03) 2px,
-        rgba(0,0,0,0.03) 4px
-      );
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    /* ── Nav ── */
-    nav {
+    /* ── Header ── */
+    header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 24px;
+      padding: 0 1.5rem;
+      height: 48px;
       display: flex;
       align-items: center;
-      gap: 32px;
-      height: 52px;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .nav-brand {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--accent2);
-      letter-spacing: 0.05em;
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
       text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 28px; height: 28px;
+      background: var(--accent);
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .logo h1 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--text);
+      font-family: var(--sans);
+    }
+
+    .logo h1 span { color: var(--accent); }
+
+    .header-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 1.25rem;
     }
 
-    .nav-brand::before {
-      content: '◈';
-      color: var(--accent);
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
-
-    .nav-links { display: flex; gap: 24px; }
 
     .nav-links a {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--dim);
+      font-size: 0.78rem;
+      color: var(--muted);
       text-decoration: none;
+      font-family: var(--mono);
       letter-spacing: 0.04em;
       transition: color 0.15s;
     }
 
     .nav-links a:hover { color: var(--text); }
 
-    .nav-status {
-      margin-left: auto;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--dim);
+    .live-dot {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 0.35rem;
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--mono);
     }
 
-    .pulse {
+    .live-dot::before {
+      content: '';
       width: 6px; height: 6px;
       border-radius: 50%;
-      background: var(--green);
-      animation: pulse 2s infinite;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+      animation: blink 2s ease-in-out infinite;
     }
 
-    @keyframes pulse {
+    @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
 
     /* ── Layout ── */
-    .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 
     /* ── Page header ── */
     .page-header {
-      margin-bottom: 28px;
-      padding-bottom: 20px;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 16px;
+      gap: 1rem;
     }
 
     .page-title {
       font-family: var(--mono);
-      font-size: 18px;
+      font-size: 1.05rem;
       font-weight: 600;
-      color: #fff;
+      color: var(--text);
       letter-spacing: -0.01em;
     }
 
     .page-subtitle {
-      font-size: 13px;
-      color: var(--dim);
-      margin-top: 4px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
     }
 
     /* ── Buttons ── */
     .btn {
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 0.75rem;
       font-weight: 500;
-      padding: 8px 16px;
+      padding: 0.45rem 1rem;
       border-radius: 4px;
       border: 1px solid transparent;
       cursor: pointer;
@@ -165,12 +179,15 @@
       color: #fff;
       border-color: var(--accent);
     }
-    .btn-primary:hover { background: #2563eb; }
+    .btn-primary:hover {
+      background: var(--accent2);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
 
     .btn-ghost {
       background: transparent;
-      color: var(--dim);
-      border-color: var(--border);
+      color: var(--muted);
+      border-color: var(--border2);
     }
     .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
 
@@ -179,12 +196,12 @@
       color: var(--red);
       border-color: var(--red);
     }
-    .btn-danger:hover { background: var(--red); color: #fff; }
+    .btn-danger:hover { background: var(--red-dim); }
 
     /* ── Severity badges ── */
     .badge {
       font-family: var(--mono);
-      font-size: 10px;
+      font-size: 0.65rem;
       font-weight: 600;
       padding: 2px 8px;
       border-radius: 3px;
@@ -192,43 +209,43 @@
       text-transform: uppercase;
     }
 
-    .badge-critical { background: rgba(220,38,38,0.15); color: var(--critical); border: 1px solid rgba(220,38,38,0.3); }
-    .badge-high     { background: rgba(239,68,68,0.12); color: var(--red);      border: 1px solid rgba(239,68,68,0.25); }
-    .badge-medium   { background: rgba(249,115,22,0.12); color: var(--orange);  border: 1px solid rgba(249,115,22,0.25); }
-    .badge-low      { background: rgba(234,179,8,0.12); color: var(--yellow);   border: 1px solid rgba(234,179,8,0.25); }
+    .badge-critical { background: rgba(242,73,92,0.15); color: var(--red);     border: 1px solid rgba(242,73,92,0.35); }
+    .badge-high     { background: rgba(242,73,92,0.10); color: var(--red);     border: 1px solid rgba(242,73,92,0.2); }
+    .badge-medium   { background: var(--accent-dim);    color: var(--accent);  border: 1px solid rgba(255,107,0,0.3); }
+    .badge-low      { background: var(--yellow-dim);    color: var(--yellow);  border: 1px solid rgba(245,166,35,0.3); }
 
-    /* ── Status badges ── */
-    .status-open        { color: var(--red);    }
-    .status-investigating { color: var(--yellow); }
-    .status-mitigated   { color: var(--orange); }
-    .status-resolved    { color: var(--green);  }
+    /* ── Status colors ── */
+    .status-open          { color: var(--red); }
+    .status-investigating  { color: var(--yellow); }
+    .status-mitigated     { color: var(--accent); }
+    .status-resolved      { color: var(--green); }
 
     /* ── Cards ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 20px;
+      padding: 1.25rem;
     }
 
     .card-title {
       font-family: var(--mono);
-      font-size: 11px;
+      font-size: 0.68rem;
       font-weight: 600;
-      color: var(--dim);
+      color: var(--muted);
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      margin-bottom: 14px;
+      margin-bottom: 0.875rem;
     }
 
     /* ── Flash messages ── */
     .flash {
-      background: rgba(59,130,246,0.1);
-      border: 1px solid rgba(59,130,246,0.3);
+      background: var(--accent-dim);
+      border: 1px solid rgba(255,107,0,0.3);
       border-radius: 4px;
-      padding: 10px 16px;
-      margin-bottom: 20px;
-      font-size: 13px;
+      padding: 0.625rem 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.82rem;
       color: var(--accent2);
     }
 
@@ -236,17 +253,19 @@
   </style>
 </head>
 <body>
-  <nav>
-    <a href="/" class="nav-brand">ADOStack / on-call</a>
-    <div class="nav-links">
-      <a href="/">Incidents</a>
-      <a href="/incidents/new">+ New</a>
+  <header>
+    <a href="/" class="logo">
+      <div class="logo-icon">⬡</div>
+      <h1>On-Call <span>Assistant</span></h1>
+    </a>
+    <div class="header-right">
+      <nav class="nav-links">
+        <a href="/">Incidents</a>
+        <a href="/incidents/new">+ New</a>
+      </nav>
+      <span class="live-dot">Live</span>
     </div>
-    <div class="nav-status">
-      <div class="pulse"></div>
-      ONLINE
-    </div>
-  </nav>
+  </header>
 
   <div class="container">
     {% with messages = get_flashed_messages() %}

@@ -19,7 +19,7 @@
 .stat-label {
   font-family: var(--mono);
   font-size: 10px;
-  color: var(--dim);
+  color: var(--muted);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -36,6 +36,9 @@
 .stat-card.open .stat-value { color: var(--red); }
 .stat-card.investigating .stat-value { color: var(--yellow); }
 .stat-card.resolved .stat-value { color: var(--green); }
+.stat-card.open { border-color: rgba(242,73,92,0.2); }
+.stat-card.investigating { border-color: rgba(245,166,35,0.2); }
+.stat-card.resolved { border-color: rgba(115,191,105,0.2); }
 
 /* Incident table */
 .incident-table {
@@ -45,9 +48,9 @@
 
 .incident-table th {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 0.65rem;
   font-weight: 600;
-  color: var(--dim);
+  color: var(--muted);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 10px 14px;
@@ -68,7 +71,7 @@
 .incident-id {
   font-family: var(--mono);
   font-size: 12px;
-  color: var(--dim);
+  color: var(--muted);
   white-space: nowrap;
 }
 
@@ -78,18 +81,18 @@
   font-weight: 500;
 }
 
-.incident-title a:hover { color: #fff; }
+.incident-title a:hover { color: var(--accent); }
 
 .incident-source {
   font-family: var(--mono);
   font-size: 11px;
-  color: var(--dim);
+  color: var(--muted);
 }
 
 .incident-time {
   font-family: var(--mono);
   font-size: 11px;
-  color: var(--dim);
+  color: var(--muted);
   white-space: nowrap;
 }
 
@@ -111,18 +114,18 @@
 
 .status-dot.OPEN::before          { background: var(--red);    box-shadow: 0 0 6px var(--red); }
 .status-dot.INVESTIGATING::before { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
-.status-dot.MITIGATED::before     { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+.status-dot.MITIGATED::before     { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
 .status-dot.RESOLVED::before      { background: var(--green);  }
 
 .status-dot.OPEN          { color: var(--red); }
 .status-dot.INVESTIGATING { color: var(--yellow); }
-.status-dot.MITIGATED     { color: var(--orange); }
+.status-dot.MITIGATED     { color: var(--accent); }
 .status-dot.RESOLVED      { color: var(--green); }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: var(--dim);
+  color: var(--muted);
   font-family: var(--mono);
   font-size: 13px;
 }

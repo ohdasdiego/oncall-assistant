@@ -7,9 +7,9 @@
 .form-group label {
   display: block;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.68rem;
   font-weight: 600;
-  color: var(--dim);
+  color: var(--muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -34,6 +34,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
 }
 
 .form-group textarea { resize: vertical; min-height: 100px; }
@@ -57,16 +58,16 @@
 }
 
 .info-box {
-  background: rgba(6,182,212,0.06);
-  border: 1px solid rgba(6,182,212,0.2);
+  background: var(--accent-dim);
+  border: 1px solid rgba(255,107,0,0.2);
   border-radius: 4px;
   padding: 14px 16px;
   font-size: 13px;
-  color: var(--dim);
+  color: var(--muted);
   line-height: 1.7;
 }
 
-.info-box strong { color: var(--accent2); font-family: var(--mono); }
+.info-box strong { color: var(--accent); font-family: var(--mono); }
 {% endblock %}
 
 {% block content %}
