@@ -12,7 +12,7 @@ import json
 import requests
 from flask import Blueprint, request, jsonify
 
-from ..models.database import create_incident, add_timeline_event
+from ..models.database import create_incident, add_timeline_event, update_incident_status
 from ..routes.incidents import _process_incident
 from ..services import telegram
 
@@ -42,12 +42,12 @@ def infra_monitor_webhook():
     # Optional HMAC signature verification
     sig_header = request.headers.get("X-Webhook-Signature", "")
     if WEBHOOK_SECRET and WEBHOOK_SECRET != "change-me-in-prod":
-        expected = hmac.new(
+        expected = "sha256=" + hmac.new(
             WEBHOOK_SECRET.encode(),
             request.data,
             hashlib.sha256
         ).hexdigest()
-        if not hmac.compare_digest(sig_header, f"sha256={expected}"):
+        if not hmac.compare_digest(sig_header, expected):
             logger.warning("Infra Monitor webhook: invalid signature")
             return jsonify({"error": "Invalid signature"}), 401
 
@@ -65,6 +65,10 @@ def infra_monitor_webhook():
         incident_id, "WEBHOOK",
         f"Alert received from AI Infra Monitor. Host: {host}, Severity: {severity.upper()}"
     )
+    # Auto-advance to INVESTIGATING — monitor already confirmed the problem
+    update_incident_status(incident_id, "INVESTIGATING")
+    add_timeline_event(incident_id, "STATUS_CHANGE", "OPEN → INVESTIGATING (auto — webhook trigger)")
+
     _process_incident(incident_id, title, description, severity)
 
     base_url = os.getenv("BASE_URL", "")
