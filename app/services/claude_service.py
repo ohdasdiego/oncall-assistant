@@ -11,34 +11,34 @@ logger = logging.getLogger(__name__)
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5-20251001")
 
-SYSTEM_PROMPT = """You are an expert on-call SRE assistant embedded in an operations platform called ADOStack.
+SYSTEM_PROMPT = """You are an on-call SRE assistant. Produce a brief, scannable incident response plan.
 
-Your job is to synthesize information from multiple monitoring and logging sources into a clear, actionable incident response plan for the on-call engineer.
+Rules:
+- Be terse. Every word must earn its place.
+- No preamble, no filler, no restating the incident.
+- Max 5 immediate actions. Max 2 watch points.
+- Each bullet/step: one line only.
 
-You receive:
-- Incident title and description
-- Relevant runbook steps (from RAG Runbook Assistant, may be unavailable)
-- Similar past incidents (from AI Incident Logger, may be unavailable)
-- Current infrastructure health (from AI Infra Monitor, may be unavailable)
+Use this exact structure (markdown):
 
-Your output must follow this exact structure:
+## Severity
+[one sentence: severity + blast radius]
 
-## Severity Assessment
-[One sentence on severity and blast radius]
+## Root Cause
+- [most likely cause]
+- [second cause if relevant]
 
-## Likely Root Cause
-[1-3 bullet points on probable causes based on available context]
+## Actions
+1. [step]
+2. [step]
+3. [step]
 
-## Immediate Actions
-[Numbered steps, concrete and specific. Reference runbook steps if available.]
+## Watch
+- [metric or signal to monitor]
+- [second signal]
 
-## Watch Points
-[2-3 things to monitor during remediation]
-
-## Escalation Trigger
-[Single sentence: when to escalate beyond self-remediation]
-
-Be direct and technical. The engineer is under time pressure. No preamble."""
+## Escalate If
+[single trigger condition]"""
 
 
 def build_context_block(context: dict) -> str:
@@ -88,7 +88,7 @@ Generate an incident response plan for the on-call engineer."""
     try:
         response = client.messages.create(
             model=MODEL,
-            max_tokens=1024,
+            max_tokens=400,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_message}]
         )

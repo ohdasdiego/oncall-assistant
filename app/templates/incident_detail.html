@@ -284,7 +284,13 @@
         <div class="timeline-body">
           <div class="timeline-type">{% if event.event_type == 'AI_PLAN' %}Response Plan{% else %}{{ event.event_type.replace('_', ' ') }}{% endif %}</div>
           <div class="timeline-time">{{ event.created_at[:16].replace('T', ' ') }} UTC</div>
-          <div class="timeline-content {% if event.event_type == 'AI_PLAN' %}ai-plan{% endif %}">{{ event.content }}</div>
+          <div class="timeline-content {% if event.event_type == 'AI_PLAN' %}ai-plan{% endif %}">
+            {%- if event.event_type == 'AI_PLAN' -%}
+              {{ event.content | markdownify }}
+            {%- else -%}
+              {{ event.content }}
+            {%- endif -%}
+          </div>
         </div>
       </div>
       {% endfor %}
