@@ -276,6 +276,7 @@ This project is intentionally production-aligned — not a local toy:
 | [AI Incident Logger](https://incidents.ado-runner.com) | Threshold alerting + incident records |
 | [RAG Runbook Assistant](https://runbooks.ado-runner.com) | Vector search over IT runbooks |
 | [K8s Event Summarizer](https://k8s.ado-runner.com) | Kubernetes cluster health digests |
+| [AI Incident Orchestrator](https://orchestrator.ado-runner.com) | Multi-agent triage pipeline |
 | **On-Call Assistant** | ← You are here — incident response + AI triage |
 
 ---
