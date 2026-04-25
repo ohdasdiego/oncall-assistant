@@ -283,11 +283,12 @@ This project is intentionally production-aligned — not a local toy:
 
 ## 🗺️ Roadmap
 
-- [ ] Webhook integration — AI Infra Monitor auto-posts to `/webhooks/infra-monitor` on threshold breach
+- [ ] Webhook integration — AI Infra Monitor auto-posts to `/webhooks/infra-monitor` on threshold breach, auto-advancing status to INVESTIGATING
+- [ ] Auto-resolve confirmation — Telegram prompt when Infra Monitor reports anomaly cleared
 - [ ] Context refresh — re-pull ADOStack sources mid-incident as conditions change
 - [ ] Escalation tracking — log and notify when escalation trigger is met
-- [ ] Multi-user support — basic auth or token-based access for write endpoints
 - [ ] Incident search — filter and search past incidents by keyword, severity, or source
+- [ ] Multi-user support — basic auth or token-based access for write endpoints
 
 ---
 
