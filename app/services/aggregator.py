@@ -91,10 +91,13 @@ def fetch_infra_health() -> dict:
         lines = []
         if ai.get("headline"):
             lines.append(f"Status: {ai.get('status','?').upper()} — {ai['headline']}")
-        if metrics:
-            cpu = metrics.get("cpu_percent")
-            mem = metrics.get("memory_percent")
-            disk = metrics.get("disk_percent")
+        # API returns {latest: {cpu_percent, memory: {percent}, disks: [{percent}]}}
+        latest = data.get("latest") or metrics
+        if latest:
+            cpu = latest.get("cpu_percent")
+            mem = latest.get("memory", {}).get("percent") if isinstance(latest.get("memory"), dict) else latest.get("memory_percent")
+            disks = latest.get("disks", [])
+            disk = disks[0].get("percent") if disks else latest.get("disk_percent")
             if cpu is not None: lines.append(f"CPU: {cpu}%")
             if mem is not None: lines.append(f"Memory: {mem}%")
             if disk is not None: lines.append(f"Disk: {disk}%")
