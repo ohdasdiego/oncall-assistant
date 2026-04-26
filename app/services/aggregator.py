@@ -14,7 +14,7 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 # --- Source endpoints (configure via env) ---
-RAG_RUNBOOK_URL = os.getenv("RAG_RUNBOOK_URL", "https://runbooks.ado-runner.com/query")
+RAG_RUNBOOK_URL = os.getenv("RAG_RUNBOOK_URL", "https://runbooks.ado-runner.com/api/query")
 INCIDENT_LOGGER_URL = os.getenv("INCIDENT_LOGGER_URL", "http://localhost:5001/api/incidents")
 INFRA_MONITOR_URL = os.getenv("INFRA_MONITOR_URL", "http://localhost:5000/api/metrics")
 
@@ -26,7 +26,7 @@ def fetch_runbook_context(query: str) -> dict:
     try:
         resp = requests.post(
             RAG_RUNBOOK_URL,
-            json={"query": query},
+            json={"question": query},
             timeout=REQUEST_TIMEOUT
         )
         resp.raise_for_status()
