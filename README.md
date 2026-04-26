@@ -275,15 +275,22 @@ This project is intentionally production-aligned — not a local toy:
 | [AI Infra Monitor](https://monitor.ado-runner.com) | Metric collection + AI health analysis |
 | [AI Incident Logger](https://incidents.ado-runner.com) | Threshold alerting + incident records |
 | [RAG Runbook Assistant](https://runbooks.ado-runner.com) | Vector search over IT runbooks |
-| [K8s Event Summarizer](https://k8s.ado-runner.com) | Kubernetes cluster health digests |
-| [AI Incident Orchestrator](https://orchestrator.ado-runner.com) | Multi-agent triage pipeline |
-| **On-Call Assistant** | ← You are here — incident response + AI triage |
+| # | Project | Live | Role |
+|---|---------|------|------|
+| 1 | [AI Infra Monitor](https://github.com/ohdasdiego/ai-infra-monitor) | [monitor.ado-runner.com](https://monitor.ado-runner.com) | Metric collection + AI health analysis |
+| 2 | [AI Incident Logger](https://github.com/ohdasdiego/ai-incident-logger) | [incidents.ado-runner.com](https://incidents.ado-runner.com) | Threshold alerting + incident records |
+| 3 | [Code Auditor](https://github.com/ohdasdiego/code-auditor) | CLI | AI-powered code review |
+| 4 | [RAG Runbook Assistant](https://github.com/ohdasdiego/rag-runbook-assistant) | [runbooks.ado-runner.com](https://runbooks.ado-runner.com) | Vector search over IT runbooks |
+| 5 | [K8s Event Summarizer](https://github.com/ohdasdiego/k8s-event-summarizer) | [k8s.ado-runner.com](https://k8s.ado-runner.com) | Kubernetes cluster health digests |
+| 6 | [AI Incident Orchestrator](https://github.com/ohdasdiego/ai-incident-orchestrator) | [orchestrator.ado-runner.com](https://orchestrator.ado-runner.com) | Multi-agent triage pipeline |
+| **7** | **On-Call Assistant** | **[oncall.ado-runner.com](https://oncall.ado-runner.com)** | **← You are here** |
 
 ---
 
 ## 🗺️ Roadmap
 
-- [ ] Webhook integration — AI Infra Monitor auto-posts to `/webhooks/infra-monitor` on threshold breach, auto-advancing status to INVESTIGATING
+- [x] Webhook integration — AI Infra Monitor auto-posts to `/webhooks/infra-monitor` on threshold breach, auto-advancing status to INVESTIGATING
+- [x] Escalation routing — High/Critical get Telegram action buttons; Low/Medium auto-handled
 - [ ] Auto-resolve confirmation — Telegram prompt when Infra Monitor reports anomaly cleared
 - [ ] Context refresh — re-pull ADOStack sources mid-incident as conditions change
 - [ ] Escalation tracking — log and notify when escalation trigger is met
