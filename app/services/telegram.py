@@ -159,12 +159,14 @@ def notify_status_change(incident_id: int, title: str, old_status: str, new_stat
     return _send(text)
 
 
-def notify_resolved(incident_id: int, title: str, duration_minutes: float, base_url: str = "") -> bool:
+def notify_resolved(incident_id: int, title: str, duration_minutes: float, base_url: str = "", note: str = "") -> bool:
     url_line = f'\n🔗 <a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
+    note_line = f"\n💡 {_esc(note)}" if note else ""
     text = (
         f"✅ <b>INCIDENT RESOLVED</b>\n"
         f"<b>#{incident_id}</b> — {_esc(title)}\n"
         f"Duration: <code>{duration_minutes:.0f} min</code>"
+        f"{note_line}"
         f"{url_line}"
     )
     return _send(text)
