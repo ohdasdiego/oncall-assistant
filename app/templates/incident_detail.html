@@ -278,7 +278,7 @@
     <div style="font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 10px;">
       Opened {{ incident.created_at[:16].replace('T', ' ') }} UTC
       {% if incident.resolved_at %}
-       . Resolved {{ incident.resolved_at[:16].replace('T', ' ') }} UTC
+       · Resolved {{ incident.resolved_at[:16].replace('T', ' ') }} UTC
       {% endif %}
     </div>
   </div>
@@ -298,13 +298,13 @@
       <div class="timeline-item">
         <div class="timeline-line"></div>
         <div class="timeline-dot {{ event.event_type }}">
-          {% if event.event_type == 'AI_PLAN' %}*
-          {% elif event.event_type == 'OPENED' %}o
-          {% elif event.event_type == 'STATUS_CHANGE' %}^
-          {% elif event.event_type == 'CONTEXT_AGGREGATED' %}@
-          {% elif event.event_type == 'WEBHOOK' %}#
-          {% elif event.event_type == 'ERROR' %}x
-          {% else %}.
+          {% if event.event_type == 'AI_PLAN' %}✦
+          {% elif event.event_type == 'OPENED' %}○
+          {% elif event.event_type == 'STATUS_CHANGE' %}△
+          {% elif event.event_type == 'CONTEXT_AGGREGATED' %}◎
+          {% elif event.event_type == 'WEBHOOK' %}⬡
+          {% elif event.event_type == 'ERROR' %}✕
+          {% else %}·
           {% endif %}
         </div>
         <div class="timeline-body">
@@ -337,10 +337,10 @@
         <form method="POST" action="/incidents/{{ incident.id }}/status">
           <input type="hidden" name="status" value="{{ status }}">
           <button type="submit" class="status-btn {% if incident.status == status %}active{% endif %}">
-            {% if status == 'OPEN' %}[RED]
-            {% elif status == 'INVESTIGATING' %}[WARN]
-            {% elif status == 'MITIGATED' %}[MED]
-            {% else %}[OK]
+            {% if status == 'OPEN' %}🔴
+            {% elif status == 'INVESTIGATING' %}🟡
+            {% elif status == 'MITIGATED' %}🟠
+            {% else %}🟢
             {% endif %}
             {{ status }}
           </button>

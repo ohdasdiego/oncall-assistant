@@ -95,7 +95,7 @@ Generate an incident response plan for the on-call engineer."""
         return response.content[0].text
     except Exception as e:
         logger.error(f"Claude API error: {e}")
-        return f"AI response unavailable: {e}\n\nFall back to manual runbook review."
+        return f"⚠️ AI response unavailable: {e}\n\nFall back to manual runbook review."
 
 
 def generate_handoff_notes(incident: dict, timeline: list, response_plan: str) -> str:

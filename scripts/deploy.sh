@@ -27,7 +27,7 @@ sudo "$APP_DIR/venv/bin/pip" install -q -r "$APP_DIR/requirements.txt"
 # .env
 if [ ! -f "$APP_DIR/.env" ]; then
     sudo cp "$APP_DIR/.env.example" "$APP_DIR/.env"
-    echo "WARNING: Created .env from template -- edit $APP_DIR/.env before starting"
+    echo "⚠️  Created .env from template — edit $APP_DIR/.env before starting"
 fi
 
 # Systemd
@@ -42,6 +42,6 @@ sudo ln -sf /etc/nginx/sites-available/$SERVICE /etc/nginx/sites-enabled/$SERVIC
 sudo nginx -t && sudo systemctl reload nginx
 
 echo ""
-echo "Deployed. Check status:"
+echo "✓ Deployed. Check status:"
 echo "  sudo systemctl status $SERVICE"
 echo "  sudo journalctl -u $SERVICE -f"

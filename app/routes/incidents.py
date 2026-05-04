@@ -131,9 +131,9 @@ def _process_incident(incident_id, title, description, severity):
         add_timeline_event(
             incident_id, "CONTEXT_AGGREGATED",
             f"Sources available: {context['sources_available']}/3 — "
-            f"Runbook: {'OK' if context['rag_runbook']['available'] else 'N/A'} | "
-            f"Past incidents: {'OK' if context['incident_logger']['available'] else 'N/A'} | "
-            f"Infra health: {'OK' if context['infra_monitor']['available'] else 'N/A'}"
+            f"Runbook: {'✓' if context['rag_runbook']['available'] else '✗'} | "
+            f"Past incidents: {'✓' if context['incident_logger']['available'] else '✗'} | "
+            f"Infra health: {'✓' if context['infra_monitor']['available'] else '✗'}"
         )
 
         plan = generate_response_plan(title, description, severity, context)
