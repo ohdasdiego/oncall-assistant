@@ -8,7 +8,7 @@ An AI-powered incident response tool that aggregates context from across ADOStac
 
 ## Live Demo
 
-🔗 **[oncall.ado-runner.com](https://oncall.ado-runner.com)**
+ **[oncall.ado-runner.com](https://oncall.ado-runner.com)**
 
 ---
 
@@ -72,25 +72,25 @@ service shows degradation within the same window.
 ### Telegram Alert
 
 ```
-🔴 INCIDENT OPENED [HIGH]
+ INCIDENT OPENED [HIGH]
 #4 — High CPU on claw-gateway1
 Source: `infra_monitor`
-🔗 View Incident
+ View Incident
 ```
 
 ### API Response — `/api/incidents`
 
 ```json
 [
-  {
-    "id": 4,
-    "title": "High CPU on claw-gateway1",
-    "severity": "high",
-    "status": "INVESTIGATING",
-    "source": "infra_monitor",
-    "created_at": "2026-04-25T17:00:00",
-    "updated_at": "2026-04-25T17:04:22"
-  }
+ {
+ "id": 4,
+ "title": "High CPU on claw-gateway1",
+ "severity": "high",
+ "status": "INVESTIGATING",
+ "source": "infra_monitor",
+ "created_at": "2026-04-25T17:00:00",
+ "updated_at": "2026-04-25T17:04:22"
+ }
 ]
 ```
 
@@ -100,35 +100,35 @@ Source: `infra_monitor`
 
 ```
 Alert Intake
-├── Flask UI              → manual incident creation
-├── POST /webhooks/infra-monitor  → AI Infra Monitor alerts (HMAC-signed)
-└── Telegram /oncall <text>       → bot command
+├── Flask UI → manual incident creation
+├── POST /webhooks/infra-monitor → AI Infra Monitor alerts (HMAC-signed)
+└── Telegram /oncall <text> → bot command
 
-      ↓
+ ↓
 
 Context Aggregator (parallel fetch, 8s timeout per source)
-├── runbooks.ado-runner.com  → relevant runbook steps (RAG)
-├── localhost:5001/api/incidents  → similar past incidents
-└── localhost:5000/api/health     → current system health
+├── runbooks.ado-runner.com → relevant runbook steps (RAG)
+├── localhost:5001/api/incidents → similar past incidents
+└── localhost:5000/api/health → current system health
 
-      ↓
+ ↓
 
 Claude (claude-haiku) → structured response plan
 
-      ↓
+ ↓
 
 SQLite — incidents + timeline_events + context_cache
 
-      ↓
+ ↓
 
 Telegram → notification at each lifecycle event
 ```
 
 ```
 Browser ──► Cloudflare (SSL/DDoS) ──► Nginx (CF IPs only) ──► Gunicorn:5005
-                                                                      │
-                                                              Claude API (Anthropic)
-                                                              ADOStack services
+ │
+ Claude API (Anthropic)
+ ADOStack services
 ```
 
 **Key design decisions:**
@@ -223,14 +223,14 @@ Create a bot via [@BotFather](https://t.me/BotFather), get your token, set `TELE
 
 ```bash
 curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
-  -d "url=https://oncall.ado-runner.com/webhooks/telegram"
+ -d "url=https://oncall.ado-runner.com/webhooks/telegram"
 ```
 
 **Bot commands:**
 ```
-/oncall <description>          Open a new incident (medium severity)
-/oncall [high] disk full       Open with explicit severity
-/status                        List all open incidents
+/oncall <description> Open a new incident (medium severity)
+/oncall [high] disk full Open with explicit severity
+/status List all open incidents
 ```
 
 ---
@@ -287,7 +287,7 @@ This project is intentionally production-aligned — not a local toy:
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [x] Webhook integration — AI Infra Monitor auto-posts to `/webhooks/infra-monitor` on threshold breach, auto-advancing status to INVESTIGATING
 - [x] Escalation routing — High/Critical get Telegram action buttons; Low/Medium auto-handled

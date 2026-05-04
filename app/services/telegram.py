@@ -14,18 +14,18 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
 
-SEVERITY_EMOJI = {
-    "low": "🟡",
-    "medium": "🟠",
-    "high": "🔴",
-    "critical": "🚨",
+SEVERITY_LABEL = {
+    "low": "[LOW]",
+    "medium": "[MEDIUM]",
+    "high": "[HIGH]",
+    "critical": "[CRITICAL]",
 }
 
-STATUS_EMOJI = {
-    "OPEN": "🔔",
-    "INVESTIGATING": "🔍",
-    "MITIGATED": "⚠️",
-    "RESOLVED": "✅",
+STATUS_LABEL = {
+    "OPEN": "[OPEN]",
+    "INVESTIGATING": "[INVESTIGATING]",
+    "MITIGATED": "[MITIGATED]",
+    "RESOLVED": "[RESOLVED]",
 }
 
 
@@ -95,8 +95,8 @@ def answer_callback(callback_query_id: str, text: str = "") -> bool:
 
 def notify_incident_opened(incident_id: int, title: str, severity: str, source: str, base_url: str = "") -> bool:
     """Send incident open alert. High/Critical get action buttons; Low/Medium get plain alert."""
-    emoji = SEVERITY_EMOJI.get(severity.lower(), "⚪")
-    url_line = f'\n🔗 <a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
+    emoji = SEVERITY_LABEL.get(severity.lower(), "[?]")
+    url_line = f'\n<a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
 
     if severity.lower() in ("high", "critical"):
         text = (
@@ -107,8 +107,8 @@ def notify_incident_opened(incident_id: int, title: str, severity: str, source: 
             f"{url_line}"
         )
         buttons = [[
-            {"text": "✅ Auto-remediate", "callback_data": f"auto:{incident_id}"},
-            {"text": "🔴 I'll handle it", "callback_data": f"manual:{incident_id}"}
+            {"text": "Auto-remediate", "callback_data": f"auto:{incident_id}"},
+            {"text": "I'll handle it", "callback_data": f"manual:{incident_id}"}
         ]]
         return _send_with_buttons(text, buttons)
     else:
@@ -125,9 +125,9 @@ def notify_incident_opened(incident_id: int, title: str, severity: str, source: 
 
 def notify_auto_handled(incident_id: int, title: str, summary: str, base_url: str = "") -> bool:
     """Notify that a low/medium incident was auto-handled."""
-    url_line = f'\n🔗 <a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
+    url_line = f'\n<a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
     text = (
-        f"⚙️ <b>AUTO-HANDLED — #{incident_id}</b>\n"
+        f"<b>AUTO-HANDLED — #{incident_id}</b>\n"
         f"{_esc(title)}\n\n"
         f"{_esc(summary)}"
         f"{url_line}"
@@ -137,9 +137,9 @@ def notify_auto_handled(incident_id: int, title: str, summary: str, base_url: st
 
 def notify_critical_page(incident_id: int, title: str, base_url: str = "") -> bool:
     """Loud page for critical incidents — no autonomous action taken."""
-    url_line = f'\n🔗 <a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
+    url_line = f'\n<a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
     text = (
-        f"🚨🚨🚨 <b>CRITICAL INCIDENT — IMMEDIATE RESPONSE REQUIRED</b> 🚨🚨🚨\n"
+        f"<b>*** CRITICAL INCIDENT — IMMEDIATE RESPONSE REQUIRED ***</b>\n"
         f"<b>#{incident_id}</b> — {_esc(title)}\n"
         f"No autonomous action taken. You must respond."
         f"{url_line}"
@@ -148,8 +148,8 @@ def notify_critical_page(incident_id: int, title: str, base_url: str = "") -> bo
 
 
 def notify_status_change(incident_id: int, title: str, old_status: str, new_status: str, base_url: str = "") -> bool:
-    emoji = STATUS_EMOJI.get(new_status, "🔄")
-    url_line = f'\n🔗 <a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
+    emoji = STATUS_LABEL.get(new_status, "[UPDATE]")
+    url_line = f'\n<a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
     text = (
         f"{emoji} <b>INCIDENT UPDATE</b>\n"
         f"<b>#{incident_id}</b> — {_esc(title)}\n"
@@ -160,10 +160,10 @@ def notify_status_change(incident_id: int, title: str, old_status: str, new_stat
 
 
 def notify_resolved(incident_id: int, title: str, duration_minutes: float, base_url: str = "", note: str = "") -> bool:
-    url_line = f'\n🔗 <a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
-    note_line = f"\n💡 {_esc(note)}" if note else ""
+    url_line = f'\n<a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
+    note_line = f"\nNote: {_esc(note)}" if note else ""
     text = (
-        f"✅ <b>INCIDENT RESOLVED</b>\n"
+        f"<b>INCIDENT RESOLVED</b>\n"
         f"<b>#{incident_id}</b> — {_esc(title)}\n"
         f"Duration: <code>{duration_minutes:.0f} min</code>"
         f"{note_line}"
@@ -173,9 +173,9 @@ def notify_resolved(incident_id: int, title: str, duration_minutes: float, base_
 
 
 def notify_escalation(incident_id: int, title: str, note: str, base_url: str = "") -> bool:
-    url_line = f'\n🔗 <a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
+    url_line = f'\n<a href="{base_url}/incidents/{incident_id}">View Incident</a>' if base_url else ""
     text = (
-        f"🚨 <b>ESCALATION TRIGGERED</b>\n"
+        f"<b>ESCALATION TRIGGERED</b>\n"
         f"<b>#{incident_id}</b> — {_esc(title)}\n"
         f"Note: {_esc(note)}"
         f"{url_line}"
